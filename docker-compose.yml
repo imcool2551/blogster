@@ -4,10 +4,10 @@ services:
   api:
     build:
       dockerfile: Dockerfile.dev
-      context: ./api
+      context: ./server
     volumes:
       - /app/node_modules
-      - ./api:/app
+      - ./server:/app
     environment:
       - NODE_PORT=5000
     ports:
