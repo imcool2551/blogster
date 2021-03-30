@@ -12,7 +12,7 @@ const validateRequest = require('../../middlewares/validateRequest');
 */
 
 router.post(
-  '/signup',
+  '/',
   [
     body('username')
       .trim()
@@ -27,6 +27,7 @@ router.post(
   validateRequest,
   (req, res) => {
     res.send(req.body);
+    // TODO: 이메일인증 로직구현
   }
 );
 

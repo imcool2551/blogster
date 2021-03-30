@@ -1,32 +1,55 @@
-const express = require('express');
-require('express-async-errors');
-const { json } = require('body-parser');
-const app = express();
+const { Sequelize } = require('sequelize');
+const app = require('./app');
+const keys = require('./config/keys');
 
-app.use(json());
+const start = async () => {
+  console.log(keys);
 
-const CustomError = require('./errors/custom-error');
-
-/***** import routers *****/
-const authRouter = require('./routes/auth');
-/*************************/
-
-app.use(authRouter);
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-app.use((err, req, res, next) => {
-  if (err instanceof CustomError) {
-    return res.status(err.statusCode).send({ errors: err.serializeErrors() });
+  if (!keys.nodePort) {
+    throw new Error('Node Port must be defined');
   }
 
-  res.status(400).send({
-    errors: [{ message: 'Somethig went wrong' }],
-  });
-});
+  if (!keys.mysqlHost) {
+    throw new Error('MySQL Host must be defined');
+  }
 
-app.listen(5000, () => {
-  console.log('Server open on port 5000');
-});
+  if (!keys.mysqlPort) {
+    throw new Error('MySQL Port must be defined');
+  }
+
+  if (!keys.mysqlDatabase) {
+    throw new Error('MySQL Database must be defined');
+  }
+
+  if (!keys.mysqlUser) {
+    throw new Error('MYSQL User must be defined');
+  }
+
+  if (!keys.mysqlPassword) {
+    throw new Error('MySQL Password must be defined');
+  }
+
+  const sequelize = new Sequelize(
+    keys.mysqlDatabase,
+    keys.mysqlUser,
+    keys.mysqlPassword,
+    {
+      host: keys.mysqlHost,
+      port: keys.mysqlPort,
+      dialect: 'mysql',
+    }
+  );
+
+  try {
+    await sequelize.authenticate();
+    console.log('DB Connection successful');
+  } catch (err) {
+    console.error('DB Connection failed', err);
+  }
+
+  app.listen(keys.nodePort, () => {
+    console.log(`Server open on port ${keys.nodePort}`);
+  });
+};
+
+start();

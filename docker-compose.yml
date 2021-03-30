@@ -6,9 +6,25 @@ services:
       dockerfile: Dockerfile.dev
       context: ./server
     volumes:
-      - /app/node_modules
       - ./server:/app
     environment:
-      - NODE_PORT=5000
+      - NODEPORT=5000
+      - MYSQLHOST=db
+      - MYSQLPORT=3306
+      - MYSQLDB=blogster
+      - MYSQLUSER=mysql
+      - MYSQLPASSWORD=mysqlpassword
     ports:
       - '5000:5000'
+  db:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysqlpassword
+      - MYSQL_DATABASE=blogster
+    volumes:
+      - ./docker/data:/var/lib/mysql
+    ports:
+      - 3306:3306
