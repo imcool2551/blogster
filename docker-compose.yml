@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile.dev
       context: ./server
     volumes:
+      - /app/node_modules/
       - ./server:/app
     environment:
       - NODEPORT=5000
@@ -16,6 +17,7 @@ services:
       - MYSQLPASSWORD=mysqlpassword
     ports:
       - '5000:5000'
+    command: sh start.sh
   db:
     image: mysql
     restart: always

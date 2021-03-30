@@ -23,7 +23,7 @@ app.use((err, req, res, next) => {
   }
 
   res.status(400).send({
-    errors: [{ message: 'Somethig went wrong' }],
+    errors: [{ message: err.message || 'Somethig went wrong' }],
   });
 });
 

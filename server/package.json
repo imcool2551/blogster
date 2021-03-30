@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/imcool2551/blogster#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "express-validator": "^6.10.0",

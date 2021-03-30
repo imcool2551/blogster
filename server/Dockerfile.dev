@@ -1,7 +1,7 @@
 FROM node:14.14.0-alpine
 WORKDIR /app
-COPY package*.json ./
+COPY package.json ./
 RUN npm install
-COPY . .
+RUN npm uninstall bcrypt
+RUN npm install bcrypt
 EXPOSE 5000
-CMD [ "npm", "run", "dev" ]
