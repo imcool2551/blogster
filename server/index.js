@@ -1,8 +1,8 @@
-const { Sequelize } = require('sequelize');
+const sequelize = require('./models/index').sequelize;
 const app = require('./app');
 const keys = require('./config/keys');
 
-const start = async () => {
+const start = () => {
   console.log(keys);
 
   if (!keys.nodePort) {
@@ -29,19 +29,8 @@ const start = async () => {
     throw new Error('MySQL Password must be defined');
   }
 
-  const sequelize = new Sequelize(
-    keys.mysqlDatabase,
-    keys.mysqlUser,
-    keys.mysqlPassword,
-    {
-      host: keys.mysqlHost,
-      port: keys.mysqlPort,
-      dialect: 'mysql',
-    }
-  );
-
   try {
-    await sequelize.authenticate();
+    sequelize.sync();
     console.log('DB Connection successful');
   } catch (err) {
     console.error('DB Connection failed', err);
