@@ -4,6 +4,8 @@ const { DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
 const { randomBytes } = require('crypto');
 
+const BadRequestError = require('../errors/bad-request-error');
+
 const User = db.define(
   'user',
   {
@@ -27,6 +29,9 @@ const User = db.define(
     isVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: 0,
+      set(value) {
+        this.setDataValue('isVerified', value);
+      },
     },
     verify_key: {
       type: DataTypes.STRING(20),
@@ -38,7 +43,11 @@ const User = db.define(
   }
 );
 
-// Build user with verify_key and hasehdPassword
+/* 
+  Static Methods
+*/
+
+// Build user with <verify_key and hasehdPassword>
 User.buildUser = function (username, email, password) {
   const generateKey = new Promise((resolve, reject) => {
     randomBytes(8, (err, buf) => {
@@ -74,6 +83,22 @@ User.buildUser = function (username, email, password) {
     .catch((err) => {
       return Promise.reject(err);
     });
+};
+
+/* 
+  Instance Methods
+*/
+
+User.prototype.verifyUser = async function () {
+  if (this.isVerified) {
+    throw new BadRequestError('User is already verified');
+  }
+  this.isVerified = 1;
+  return this.save();
+};
+
+User.prototype.comparePassword = async function (password) {
+  return bcrypt.compare(password, this.password);
 };
 
 module.exports = User;

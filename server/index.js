@@ -35,6 +35,10 @@ const start = () => {
     throw new Error('Email Password must be defined');
   }
 
+  if (!keys.jwtKey) {
+    throw new Error('JWT Key must be defined');
+  }
+
   try {
     db.sync();
     console.log('DB Connection successful');

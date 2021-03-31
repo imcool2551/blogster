@@ -7,4 +7,5 @@ module.exports = {
   mysqlPassword: process.env.MYSQLPASSWORD,
   email: process.env.EMAIL,
   emailPassword: process.env.EMAILPASSWORD,
+  jwtKey: process.env.JWTKEY,
 };

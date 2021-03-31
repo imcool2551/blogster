@@ -1,10 +1,13 @@
 const router = require('express').Router();
 const { body } = require('express-validator');
-const validateRequest = require('../../middlewares/validateRequest');
+const jwt = require('jsonwebtoken');
+
 const BadRequestError = require('../../errors/bad-request-error');
+const NotFoundError = require('../../errors/not-found-error');
+const validateRequest = require('../../middlewares/validateRequest');
+const { sendVerificationEmail } = require('../../config/mail');
 
 const User = require('../../models/user');
-const { sendVerificationEmail } = require('../../config/mail');
 
 /*
   POST /api/users/signup
@@ -63,21 +66,41 @@ router.post(
 /*
   GET /api/users/signup
 
-  query-string: verify_token
+  query-string: verify_key
 */
 
-router.get('/', (req, res) => {
-  // If there is no req.query.key
-  // Simply send a message that email was sent
-  if (!req.query.verify_key) {
+router.get('/', async (req, res) => {
+  const { verify_key } = req.query;
+
+  // User is redirected
+  if (!verify_key) {
     return res.send('Email has been sent');
   }
-  // If there is req.query.key
-  // Find a user and send jwt
-  // or throw an error
-  console.log('Im executed');
-  console.log(req.query);
-  res.send(`You are here!`);
+
+  const user = await User.findOne({
+    where: {
+      verify_key,
+    },
+  });
+
+  if (!user) {
+    throw new NotFoundError('There is no user with provided verify_key');
+  }
+
+  await user.verifyUser();
+
+  // Send jwt
+  const userJwt = jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      isVerified: user.isVerified,
+      isAdmin: user.isAdmin,
+    },
+    process.env.JWTKEY
+  );
+
+  res.status(201).send(userJwt);
 });
 
 module.exports = router;
