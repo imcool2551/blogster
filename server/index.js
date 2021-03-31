@@ -1,10 +1,8 @@
-const sequelize = require('./models/index').sequelize;
+const db = require('./config/db');
 const app = require('./app');
 const keys = require('./config/keys');
 
 const start = () => {
-  console.log(keys);
-
   if (!keys.nodePort) {
     throw new Error('Node Port must be defined');
   }
@@ -29,8 +27,16 @@ const start = () => {
     throw new Error('MySQL Password must be defined');
   }
 
+  if (!keys.email) {
+    throw new Error('Email must be defined');
+  }
+
+  if (!keys.emailPassword) {
+    throw new Error('Email Password must be defined');
+  }
+
   try {
-    sequelize.sync();
+    db.sync();
     console.log('DB Connection successful');
   } catch (err) {
     console.error('DB Connection failed', err);

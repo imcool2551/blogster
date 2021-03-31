@@ -5,4 +5,6 @@ module.exports = {
   mysqlDatabase: process.env.MYSQLDB,
   mysqlUser: process.env.MYSQLUSER,
   mysqlPassword: process.env.MYSQLPASSWORD,
+  email: process.env.EMAIL,
+  emailPassword: process.env.EMAILPASSWORD,
 };

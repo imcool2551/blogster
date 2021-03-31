@@ -1,14 +1,14 @@
 const router = require('express').Router();
 const { body } = require('express-validator');
-const bcrypt = require('bcrypt');
-const { randomBytes } = require('crypto');
 const validateRequest = require('../../middlewares/validateRequest');
 const BadRequestError = require('../../errors/bad-request-error');
 
-const { User } = require('../../models');
+const User = require('../../models/user');
+const { sendVerificationEmail } = require('../../config/mail');
 
 /*
   POST /api/users/signup
+
   {
     username
     email
@@ -31,37 +31,53 @@ router.post(
   ],
   validateRequest,
   async (req, res) => {
-    console.log(req.body);
     const { username, email, password } = req.body;
     // Check if user already exists
-    const user = await User.findOne({
+    const existingUser = await User.findOne({
       where: {
         email,
       },
     });
 
-    if (user) {
+    if (existingUser) {
       throw new BadRequestError('Email in use');
     }
-    // generate verify_key
-    const verifyKey = await bcrypt.genSalt(10);
-    console.log(verifyKey);
 
-    // Save a user to DB (+ hash password)
-
-    // Send an email
-    // (http://<req.host>:<PORT>/auth/signup?key=<key>)
-
-    // Redirect to GET /auth/user/signup
+    // Build user
+    User.buildUser(username, email, password)
+      .then((user) => {
+        // If user is created, send a verification email
+        const baseUrl = `http://${req.headers.host}${req.baseUrl}`;
+        return sendVerificationEmail(user, baseUrl);
+      })
+      .then(() => {
+        // If email is sent, redirect user
+        return res.redirect(303, '/api/users/signup');
+      })
+      .catch((err) => {
+        throw err;
+      });
   }
 );
 
+/*
+  GET /api/users/signup
+
+  query-string: verify_token
+*/
+
 router.get('/', (req, res) => {
-  // If there is no req.params.key
+  // If there is no req.query.key
   // Simply send a message that email was sent
-  // If there is req.params.key
+  if (!req.query.verify_key) {
+    return res.send('Email has been sent');
+  }
+  // If there is req.query.key
   // Find a user and send jwt
   // or throw an error
+  console.log('Im executed');
+  console.log(req.query);
+  res.send(`You are here!`);
 });
 
 module.exports = router;
