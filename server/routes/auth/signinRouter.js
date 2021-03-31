@@ -10,6 +10,11 @@ const User = require('../../models/user');
 
 /*
   POST /api/users/signin
+
+  {
+    email
+    password
+  }
 */
 
 router.post(
@@ -48,7 +53,10 @@ router.post(
         isVerified: user.isVerified,
         isAdmin: user.isAdmin,
       },
-      process.env.JWTKEY
+      process.env.JWTKEY,
+      {
+        expiresIn: 30,
+      }
     );
 
     res.status(200).json({ token: userJwt });

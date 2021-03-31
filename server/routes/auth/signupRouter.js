@@ -97,7 +97,10 @@ router.get('/', async (req, res) => {
       isVerified: user.isVerified,
       isAdmin: user.isAdmin,
     },
-    process.env.JWTKEY
+    process.env.JWTKEY,
+    {
+      expiresIn: '1h',
+    }
   );
 
   res.status(201).send(userJwt);

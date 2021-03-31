@@ -27,6 +27,14 @@ const start = () => {
     throw new Error('MySQL Password must be defined');
   }
 
+  if (!keys.redisHost) {
+    throw new Error('Redis Host must be defined');
+  }
+
+  if (!keys.redisPort) {
+    throw new Error('Redis Port must be defined');
+  }
+
   if (!keys.email) {
     throw new Error('Email must be defined');
   }
@@ -42,6 +50,9 @@ const start = () => {
   try {
     db.sync();
     console.log('DB Connection successful');
+    // Create redisClient
+    require('./config/redisClient');
+    console.log('Redis Connection successful');
   } catch (err) {
     console.error('DB Connection failed', err);
   }

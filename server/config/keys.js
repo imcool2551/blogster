@@ -5,6 +5,8 @@ module.exports = {
   mysqlDatabase: process.env.MYSQLDB,
   mysqlUser: process.env.MYSQLUSER,
   mysqlPassword: process.env.MYSQLPASSWORD,
+  redisHost: process.env.REDISHOST,
+  redisPort: process.env.REDISPORT,
   email: process.env.EMAIL,
   emailPassword: process.env.EMAILPASSWORD,
   jwtKey: process.env.JWTKEY,
