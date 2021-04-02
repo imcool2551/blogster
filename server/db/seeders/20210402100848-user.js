@@ -45,6 +45,26 @@ module.exports = {
         createdAt,
         updatedAt,
       },
+      {
+        username: 'Liker',
+        email: 'like@gmail.com',
+        password: 'password',
+        isAdmin: 0,
+        isVerified: 1,
+        verify_key: 'key',
+        createdAt,
+        updatedAt,
+      },
+      {
+        username: 'Hater',
+        email: 'hate@gmail.com',
+        password: 'password',
+        isAdmin: 0,
+        isVerified: 1,
+        verify_key: 'key',
+        createdAt,
+        updatedAt,
+      },
     ]);
   },
 
