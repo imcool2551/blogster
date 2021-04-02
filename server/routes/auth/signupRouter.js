@@ -7,7 +7,7 @@ const NotFoundError = require('../../errors/not-found-error');
 const validateRequest = require('../../middlewares/validateRequest');
 const { sendVerificationEmail } = require('../../config/mail');
 
-const User = require('../../models/user');
+const { User } = require('../../db/models');
 
 /*
   POST /api/users/signup
@@ -36,6 +36,7 @@ router.post(
   async (req, res) => {
     const { username, email, password } = req.body;
     // Check if user already exists
+    console.log(User);
     const existingUser = await User.findOne({
       where: {
         email,
@@ -77,7 +78,7 @@ router.get('/', async (req, res) => {
     return res.send('Email has been sent');
   }
 
-  const user = await User.findOne({
+  let user = await User.findOne({
     where: {
       verify_key,
     },
@@ -87,7 +88,7 @@ router.get('/', async (req, res) => {
     throw new NotFoundError('There is no user with provided verify_key');
   }
 
-  await user.verifyUser();
+  user = await user.verifyUser();
 
   // Send jwt
   const userJwt = jwt.sign(
@@ -103,7 +104,7 @@ router.get('/', async (req, res) => {
     }
   );
 
-  res.status(201).send(userJwt);
+  res.status(201).send({ token: userJwt });
 });
 
 module.exports = router;

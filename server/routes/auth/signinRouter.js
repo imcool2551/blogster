@@ -6,7 +6,7 @@ const UnauthorizedError = require('../../errors/unauthorized-error');
 const NotFoundError = require('../../errors/not-found-error');
 const validateRequest = require('../../middlewares/validateRequest');
 
-const User = require('../../models/user');
+const { User } = require('../../db/models');
 
 /*
   POST /api/users/signin

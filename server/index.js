@@ -1,8 +1,8 @@
-const db = require('./config/db');
+const { sequelize } = require('./db/models');
 const app = require('./app');
 const keys = require('./config/keys');
 
-const start = () => {
+const start = async () => {
   if (!keys.nodePort) {
     throw new Error('Node Port must be defined');
   }
@@ -48,7 +48,7 @@ const start = () => {
   }
 
   try {
-    db.sync();
+    await sequelize.authenticate();
     console.log('DB Connection successful');
     // Create redisClient
     require('./config/redisClient');
