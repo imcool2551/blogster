@@ -13,6 +13,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.hasMany(models.Post, {
+        foreignKey: 'userId',
+        as: 'posts',
+      });
+      User.hasMany(models.Comment, {
+        foreignKey: 'userId',
+        as: 'comments',
+      });
+      User.hasMany(models.Like, {
+        foreignKey: 'userId',
+        as: 'likes',
+      });
+      User.hasMany(models.Report, {
+        foreignKey: 'userId',
+        as: 'reports',
+      });
     }
 
     static buildUser(username, email, password) {
@@ -69,15 +85,25 @@ module.exports = (sequelize, DataTypes) => {
       username: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: {
+          isEmail: true,
+          notEmpty: true,
+        },
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
       isAdmin: {
         type: DataTypes.BOOLEAN,
@@ -93,6 +119,9 @@ module.exports = (sequelize, DataTypes) => {
       verify_key: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
       },
     },
     {
