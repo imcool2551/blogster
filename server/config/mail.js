@@ -9,8 +9,7 @@ const mailTransporter = nodemailer.createTransport({
   },
 });
 
-const sendVerificationEmail = (user, baseUrl) => {
-  const url = `${baseUrl}?verify_key=${user.verify_key}`;
+const sendVerificationEmail = (user, url) => {
   const data = {
     from: process.env.EMAIL,
     to: user.email,

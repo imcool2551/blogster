@@ -38,7 +38,6 @@ module.exports = (sequelize, DataTypes) => {
             reject(err);
           }
           const key = buf.toString('base64');
-          console.log('key', key);
           resolve(key);
         });
       });
@@ -85,6 +84,7 @@ module.exports = (sequelize, DataTypes) => {
       username: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
           notEmpty: true,
         },

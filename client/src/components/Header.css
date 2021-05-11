@@ -1,0 +1,59 @@
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-nav-ul {
+  position: fixed;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  height: 50px;
+  top: 0;
+  right: 0;
+  z-index: 5;
+}
+
+.header-nav-ul-invisible {
+  display: none;
+}
+
+.header-nav-ul li {
+  list-style: none;
+  margin-right: 20px;
+  padding: 12px;
+}
+
+.header-nav-ul li a {
+  transition: 0.2s;
+  color: #fff;
+  font-weight: 300;
+}
+
+.header-nav-ul li a:hover {
+  opacity: 0.2;
+}
+
+.header-banner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-banner img {
+  width: 100%;
+  height: 100%
+}
+
+.header-banner h1 {
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: #fff;
+  position: absolute;
+}
+

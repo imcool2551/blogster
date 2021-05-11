@@ -1,19 +1,27 @@
-const express = require('express');
 require('express-async-errors');
-const { json } = require('body-parser');
+const express = require('express');
 const app = express();
+const { json } = require('body-parser');
+const cors = require('cors');
 
+// Middlewares
 app.use(json());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 
 const CustomError = require('./errors/custom-error');
 
 /***** import routers *****/
-const authRouter = require('./routes/auth');
+const authRouter = require('./routes/authRouter');
 /*************************/
 
 app.use(authRouter);
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Hello World!');
 });
 

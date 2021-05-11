@@ -1,21 +1,23 @@
 const jwt = require('jsonwebtoken');
+const util = require('util');
+
 const client = require('../config/redisClient');
-const { promisify } = require('util');
-const getAsync = promisify(client.get).bind(client);
-const verifyAsync = promisify(jwt.verify);
 const UnauthorizedError = require('../errors/unauthorized-error');
+
+client.get = util.promisify(client.get);
+jwt.verify = util.promisify(jwt.verify);
 
 module.exports = async (req, res, next) => {
   const token =
     req.headers['x-access-token'] || req.headers['authorization'].split(' ')[1];
 
   try {
-    const decoded = await verifyAsync(token, process.env.JWTKEY);
+    const decoded = await jwt.verify(token, process.env.JWTKEY);
 
     // Sereialize token for redis lookup
     const key = JSON.stringify(decoded);
 
-    const reply = await getAsync(key);
+    const reply = await client.get(key);
     // Redis is marking token as blacklisted
     if (reply) {
       throw new UnauthorizedError('Blacklisted token');
