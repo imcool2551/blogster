@@ -190,21 +190,24 @@ router.post('/api/users/signout', requireAuth, (req, res) => {
   res.send({});
 });
 
+/*
+  GET /api/users/currentuser
+
+  Headers: [x-access-token] || [Authorization]
+*/
+
 router.get('/api/users/currentuser', async (req, res) => {
   const token =
     req.headers['x-access-token'] || req.headers['authorization'].split(' ')[1];
   try {
-    console.log(1);
     const decoded = await jwt.verify(token, process.env.JWTKEY);
-    console.log(`Decoded ${decoded}`);
-    console.log(2);
 
     const key = JSON.stringify(decoded);
     const reply = await client.get(key);
     if (reply) {
       throw new NotFoundError('Blacklisted token');
     }
-    return res.status(200).send(decoded.username);
+    return res.send(decoded.username);
   } catch (err) {
     throw err;
   }

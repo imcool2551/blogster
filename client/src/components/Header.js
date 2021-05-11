@@ -1,9 +1,16 @@
 import './Header.css';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-const Header = () => {
+import { getCurrentUser } from '../actions/auth';
+
+const Header = ({ isSignedIn, getCurrentUser }) => {
   useEffect(() => {
+    const init = async () => {
+      await getCurrentUser();
+    };
+    init();
     const toggleNavbar = () => {
       if (window.pageYOffset > 250) {
         document
@@ -19,7 +26,7 @@ const Header = () => {
     return () => {
       document.removeEventListener('scroll', toggleNavbar);
     };
-  }, []);
+  }, [getCurrentUser]);
 
   return (
     <header className="header">
@@ -30,9 +37,15 @@ const Header = () => {
         <li>
           <Link to="/tags">TAGS</Link>
         </li>
-        <li>
-          <Link to="/login">LOGIN</Link>
-        </li>
+        {isSignedIn ? (
+          <li>
+            <Link to="/logout">LOGOUT</Link>
+          </li>
+        ) : (
+          <li>
+            <Link to="/login">LOGIN</Link>
+          </li>
+        )}
       </ul>
       <div className="header-banner">
         <img src="/head-bg.jpg" alt="BG" />
@@ -42,4 +55,10 @@ const Header = () => {
   );
 };
 
-export default Header;
+const mapStateToProps = (state) => {
+  return {
+    isSignedIn: state.auth.isSignedIn,
+  };
+};
+
+export default connect(mapStateToProps, { getCurrentUser })(Header);
