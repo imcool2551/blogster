@@ -1,6 +1,6 @@
+import _ from 'lodash';
 import React from 'react';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
-import { Link } from 'react-router-dom';
 
 // Client Side Validation
 const required = (value) =>
@@ -12,6 +12,12 @@ const minLength8 = minLength(8);
 const maxLength = (max) => (value) =>
   value && value.length > max ? `Must be ${max} characters or less` : undefined;
 const maxLength20 = maxLength(20);
+const email = (value) =>
+  value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)
+    ? 'Invalid email address'
+    : undefined;
+const passwordMatch = (value, allValues) =>
+  value !== allValues.password ? 'Password does not match' : undefined;
 
 // Redux-Form JSX ==> html tags
 const renderField = ({ input, label, type, meta: { touched, error } }) => {
@@ -27,23 +33,15 @@ const renderField = ({ input, label, type, meta: { touched, error } }) => {
   );
 };
 
-const LoginForm = (props) => {
+const SignupForm = (props) => {
   const { error, handleSubmit } = props;
 
   const onSubmit = async (formValues) => {
     try {
-      await props.onSubmit(formValues);
+      await props.onSubmit(_.omit(formValues, ['passwordMatch']));
     } catch (err) {
       if (err.response.status === 400) {
-        // 유효성 검사 실패
-        err.response.data.errors.forEach((e) => {
-          throw new SubmissionError({
-            [e.param]: e.message,
-            _error: 'Login failed!',
-          });
-        });
-      } else {
-        // 인증 실패
+        // 중복 닉네임/이메일
         throw new SubmissionError({
           _error: err.response.data.errors[0].message,
         });
@@ -53,6 +51,13 @@ const LoginForm = (props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="ui form error">
+      <Field
+        name="email"
+        type="email"
+        component={renderField}
+        validate={[email, required]}
+        label="Email"
+      />
       <Field
         name="username"
         type="text"
@@ -67,14 +72,17 @@ const LoginForm = (props) => {
         validate={[minLength8, maxLength20, required]}
         label="Password"
       />
-      <div className="login-signup-link">
-        <span>Not a Member?</span>
-        <Link to="/signup">Sign up</Link>
-      </div>
+      <Field
+        name="passwordMatch"
+        type="password"
+        component={renderField}
+        validate={[passwordMatch]}
+        label="Password Validate"
+      />
       {error && <strong>{error}</strong>}
-      <div className="login-button">
+      <div className="signup-button">
         <button className="ui button primary" type="submit">
-          LOGIN
+          SIGN UP
         </button>
       </div>
     </form>
@@ -82,5 +90,5 @@ const LoginForm = (props) => {
 };
 
 export default reduxForm({
-  form: 'loginForm',
-})(LoginForm);
+  form: 'signupForm',
+})(SignupForm);

@@ -28,3 +28,13 @@ export const signOut = () => async (dispatch) => {
   dispatch({ type: SIGN_OUT });
   history.push('/');
 };
+
+export const signUp = (formValues) => async (dispatch) => {
+  try {
+    const { data } = await api.post('/api/users/signup', { ...formValues });
+    alert('이메일로 인증메일이 발송되었습니다');
+    history.push('/login');
+  } catch (err) {
+    throw err;
+  }
+};

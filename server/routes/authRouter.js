@@ -2,6 +2,7 @@ const router = require('express').Router();
 const { body } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const util = require('util');
+const { Op } = require('sequelize');
 
 const client = require('../config/redisClient');
 const { sendVerificationEmail } = require('../config/mail');
@@ -47,18 +48,19 @@ router.post(
     // Check if user already exists
     const existingUser = await User.findOne({
       where: {
-        email,
+        [Op.or]: [{ email }, { username }],
       },
     });
 
     if (existingUser) {
-      throw new BadRequestError('Email in use');
+      throw new BadRequestError('Email or Username in use');
     }
 
     // Build user
     User.buildUser(username, email, password)
       .then((user) => {
         // If user is created, send a verification email
+
         const url = `http://${req.headers.host}${req.url}?verify_key=${user.verify_key}`;
         return sendVerificationEmail(user, url);
       })
@@ -98,21 +100,7 @@ router.get('/api/users/signup', async (req, res) => {
 
   user = await user.verifyUser();
 
-  // Send jwt
-  const token = await jwt.sign(
-    {
-      id: user.id,
-      username: user.username,
-      isVerified: user.isVerified,
-      isAdmin: user.isAdmin,
-    },
-    process.env.JWTKEY,
-    {
-      expiresIn: '1h',
-    }
-  );
-
-  res.status(201).send(token);
+  res.send('회원가입이 완료되었습니다');
 });
 
 /*
@@ -155,7 +143,6 @@ router.post(
       throw new UnauthorizedError('Account is not verified');
     }
 
-    // Send jwt (TODO: fix expiration time)
     jwt.sign(
       {
         id: user.id,

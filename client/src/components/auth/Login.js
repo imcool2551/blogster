@@ -6,12 +6,12 @@ import { connect } from 'react-redux';
 import LoginForm from './LoginForm';
 import { signIn } from '../../actions/auth';
 
-const Login = (props) => {
+const Login = ({ isSignedIn, signIn }) => {
   const onSubmit = async (formValues) => {
-    await props.signIn(formValues);
+    await signIn(formValues);
   };
 
-  if (props.isSignedIn) {
+  if (isSignedIn) {
     return <Redirect to="/" />;
   }
   return (
