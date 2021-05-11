@@ -27,7 +27,6 @@ const LoginForm = (props) => {
     try {
       await props.onSubmit(formValues);
     } catch (err) {
-      console.log(err.response.data);
       if (err.response.status === 400) {
         // 유효성 검사 실패
         err.response.data.errors.forEach((e) => {
