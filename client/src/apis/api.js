@@ -3,7 +3,15 @@ import axios from 'axios';
 export default axios.create({
   baseURL: 'http://localhost:5000/',
   headers: {
-    Authorization: `Bearer ${window.localStorage.getItem('token')}`,
-    'x-access-token': `${window.localStorage.getItem('token')}`,
+    Authorization: {
+      toString() {
+        return `Bearer ${localStorage.getItem('token')}`;
+      },
+    },
+    'x-access-token': {
+      toString() {
+        return `${window.localStorage.getItem('token')}`;
+      },
+    },
   },
 });
