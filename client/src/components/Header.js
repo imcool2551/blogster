@@ -38,13 +38,20 @@ const Header = ({ isSignedIn, getCurrentUser }) => {
           <Link to="/tags">TAGS</Link>
         </li>
         {isSignedIn ? (
-          <li>
-            <Link to="/logout">LOGOUT</Link>
-          </li>
+          <>
+            <li>
+              <Link to="/mypage">MYPAGE</Link>
+            </li>
+            <li>
+              <Link to="/logout">LOGOUT</Link>
+            </li>
+          </>
         ) : (
-          <li>
-            <Link to="/login">LOGIN</Link>
-          </li>
+          <>
+            <li>
+              <Link to="/login">LOGIN</Link>
+            </li>
+          </>
         )}
       </ul>
       <div className="header-banner">

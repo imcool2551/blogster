@@ -18,15 +18,21 @@ export const getCurrentUser = () => async (dispatch) => {
     const { data } = await api.get('/api/users/currentuser');
     dispatch({ type: GET_CURRENT_USER, payload: data });
   } catch (err) {
+    window.localStorage.removeItem('token');
     dispatch({ type: SIGN_OUT });
+    history.push('/');
   }
 };
 
 export const signOut = () => async (dispatch) => {
-  await api.post('/api/users/signout');
-  window.localStorage.removeItem('token');
-  dispatch({ type: SIGN_OUT });
-  history.push('/');
+  try {
+    await api.post('/api/users/signout');
+  } catch {
+  } finally {
+    window.localStorage.removeItem('token');
+    dispatch({ type: SIGN_OUT });
+    history.push('/');
+  }
 };
 
 export const signUp = (formValues) => async (dispatch) => {

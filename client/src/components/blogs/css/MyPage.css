@@ -1,0 +1,20 @@
+.my-page-new {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  background-color: #ff867c;
+  border-radius: 25px;
+  font-size: 2rem;
+  color: #111;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  transition: 0.2s;
+}
+
+.my-page-new:hover {
+  color: #111;
+  opacity: 0.8;
+}

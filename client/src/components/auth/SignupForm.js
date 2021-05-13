@@ -41,7 +41,7 @@ const SignupForm = (props) => {
       await props.onSubmit(_.omit(formValues, ['passwordMatch']));
     } catch (err) {
       if (err.response.status === 400) {
-        // 중복 닉네임/이메일
+        // <서버 유효성 검사 실패> OR <중복 닉네임/이메일>
         throw new SubmissionError({
           _error: err.response.data.errors[0].message,
         });

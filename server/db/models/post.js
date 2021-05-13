@@ -13,6 +13,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId',
         as: 'user',
       });
+      Post.belongsToMany(models.Tag, {
+        through: models.PostTag,
+      });
       Post.hasMany(models.Comment, {
         foreignKey: 'postId',
         as: 'comments',
@@ -24,9 +27,6 @@ module.exports = (sequelize, DataTypes) => {
       Post.hasMany(models.Report, {
         foreignKey: 'postId',
         as: 'reports',
-      });
-      Post.belongsToMany(models.Tag, {
-        through: models.PostTag,
       });
     }
   }
