@@ -44,5 +44,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "babel-plugin-polyfill-corejs2": "^0.2.0",
+    "babel-plugin-polyfill-corejs3": "^0.2.0",
+    "babel-plugin-polyfill-regenerator": "^0.2.0"
   }
 }

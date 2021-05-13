@@ -18,9 +18,13 @@ const CustomError = require('./errors/custom-error');
 
 /***** import routers *****/
 const authRouter = require('./routes/authRouter');
+const uploadRouter = require('./routes/uploadRouter');
+const blogRouter = require('./routes/blogRouter');
 /*************************/
 
 app.use(authRouter);
+app.use(uploadRouter);
+app.use(blogRouter);
 
 app.get('/api', (req, res) => {
   res.send('Hello World!');

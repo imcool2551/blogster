@@ -10,4 +10,6 @@ module.exports = {
   email: process.env.EMAIL,
   emailPassword: process.env.EMAILPASSWORD,
   jwtKey: process.env.JWTKEY,
+  accessKeyId: process.env.ACCESSKEYID,
+  secretAccessKey: process.env.SECRETACCESSKEY,
 };

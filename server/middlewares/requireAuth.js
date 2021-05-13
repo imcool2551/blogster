@@ -20,11 +20,11 @@ module.exports = async (req, res, next) => {
     const reply = await client.get(key);
     // Redis is marking token as blacklisted
     if (reply) {
-      throw new UnauthorizedError('Blacklisted token');
+      throw new UnauthorizedError('Invalid token');
     }
     req.user = decoded;
   } catch (err) {
-    // Token is invalid/expired
+    // Token is malformed/expired
     throw err;
   }
   next();
