@@ -3,8 +3,8 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('post_tags', {
       post_id: {
-        allowNull: false,
         type: Sequelize.INTEGER,
+        allowNull: false,
         primaryKey: true,
         references: {
           model: {
@@ -16,8 +16,8 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       tag_id: {
-        allowNull: false,
         type: Sequelize.INTEGER,
+        allowNull: false,
         primaryKey: true,
         references: {
           model: {

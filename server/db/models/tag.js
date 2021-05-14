@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Tag.belongsToMany(models.Post, {
         through: models.PostTag,
+        foreignKey: 'tag_id',
+        as: 'posts',
       });
     }
   }
@@ -29,6 +31,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       tableName: 'tags',
       modelName: 'Tag',
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_general_ci',
     }
   );
   return Tag;

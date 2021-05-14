@@ -14,19 +14,19 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(models.Post, {
-        foreignKey: 'userId',
+        foreignKey: 'user_id',
         as: 'posts',
       });
       User.hasMany(models.Comment, {
-        foreignKey: 'userId',
+        foreignKey: 'user_id',
         as: 'comments',
       });
       User.hasMany(models.Like, {
-        foreignKey: 'userId',
+        foreignKey: 'user_id',
         as: 'likes',
       });
       User.hasMany(models.Report, {
-        foreignKey: 'userId',
+        foreignKey: 'user_id',
         as: 'reports',
       });
     }

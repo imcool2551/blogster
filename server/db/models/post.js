@@ -10,26 +10,28 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Post.belongsTo(models.User, {
-        foreignKey: 'userId',
+        foreignKey: 'user_id',
         as: 'user',
       });
       Post.belongsToMany(models.Tag, {
         through: models.PostTag,
+        foreignKey: 'post_id',
+        as: 'tags',
       });
       Post.hasMany(models.Image, {
-        foreignKey: 'postId',
+        foreignKey: 'post_id',
         as: 'images',
       });
       Post.hasMany(models.Comment, {
-        foreignKey: 'postId',
+        foreignKey: 'post_id',
         as: 'comments',
       });
       Post.hasMany(models.Like, {
-        foreignKey: 'postId',
+        foreignKey: 'post_id',
         as: 'likes',
       });
       Post.hasMany(models.Report, {
-        foreignKey: 'postId',
+        foreignKey: 'post_id',
         as: 'reports',
       });
     }
@@ -55,6 +57,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       tableName: 'posts',
       modelName: 'Post',
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_general_ci',
     }
   );
   return Post;

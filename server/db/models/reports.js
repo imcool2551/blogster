@@ -10,19 +10,19 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Report.belongsTo(models.User, {
-        foreignKey: 'userId',
+        foreignKey: 'user_id',
         as: 'user',
       });
       Report.belongsTo(models.Post, {
-        foreignKey: 'postId',
+        foreignKey: 'post_id',
         as: 'post',
       });
     }
   }
   Report.init(
     {
-      userId: DataTypes.INTEGER,
-      postId: DataTypes.INTEGER,
+      user_id: DataTypes.INTEGER,
+      post_id: DataTypes.INTEGER,
     },
     {
       sequelize,

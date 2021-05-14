@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Comment.belongsTo(models.User, {
-        foreignKey: 'userId',
+        foreignKey: 'user_id',
         as: 'user',
       });
       Comment.belongsTo(models.Post, {
-        foreignKey: 'postId',
+        foreignKey: 'post_id',
         as: 'post',
       });
     }
@@ -33,6 +33,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       tableName: 'comments',
       modelName: 'Comment',
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_general_ci',
     }
   );
   return Comment;

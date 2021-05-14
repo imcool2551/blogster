@@ -9,11 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      PostTag.belongsTo(models.Post, { foreignKey: 'post_id' });
+      PostTag.belongsTo(models.Tag, { foreignKey: 'tag_id' });
     }
   }
   PostTag.init(
     {
-      postId: {
+      post_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
@@ -26,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      tagId: {
+      tag_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,

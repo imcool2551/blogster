@@ -4,7 +4,7 @@ import history from '../history';
 
 export const createBlog = (formValues) => async (dispatch) => {
   let { files } = formValues;
-  files = Array.prototype.slice.call(files);
+  files = files ? Array.prototype.slice.call(files) : [];
 
   // 1번 promise 배열  (files 개수만큼 signed-url 요청)
   const getUploadConfigs = files.map((file) => {
@@ -54,7 +54,7 @@ export const createBlog = (formValues) => async (dispatch) => {
       console.log(3, 'api서버에 블로그 post요청');
       return new Promise((resolve, reject) => {
         api
-          .post('/api/blogs', { ...formValues, paths })
+          .post('/api/blogs', { ...formValues, files: paths })
           .then(resolve)
           .catch(reject);
       });
