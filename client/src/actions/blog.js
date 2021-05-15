@@ -2,7 +2,7 @@ import api from '../apis/api';
 import axios from 'axios';
 import history from '../history';
 
-import { CREATE_BLOG, FETCH_BLOG } from './types';
+import { CREATE_BLOG, FETCH_BLOG, FETCH_MY_BLOGS, DELETE_BLOG } from './types';
 
 export const createBlog = (formValues) => async (dispatch) => {
   let { files } = formValues;
@@ -62,7 +62,7 @@ export const createBlog = (formValues) => async (dispatch) => {
       });
     })
     .then(({ data }) => {
-      console.log(4, 'api서버로부터 201 응답', data);
+      console.log(4, 'api서버로부터 200 응답 (303 See Other)', data);
       // 스토어 변경후 리디렉션
       dispatch({ type: CREATE_BLOG, payload: data });
       history.push('/mypage');
@@ -75,4 +75,19 @@ export const createBlog = (formValues) => async (dispatch) => {
 export const fetchBlog = (id) => async (dispatch) => {
   const { data } = await api.get(`/api/blogs/${id}`);
   dispatch({ type: FETCH_BLOG, payload: data });
+};
+
+export const fetchMyBlogs = () => async (dispatch) => {
+  const { data } = await api.get(`/api/user/blogs`);
+  dispatch({ type: FETCH_MY_BLOGS, payload: data });
+};
+
+export const deleteBlog = (id) => async (dispatch) => {
+  try {
+    await api.delete(`/api/blogs/${id}`);
+    dispatch({ type: DELETE_BLOG, payload: id });
+  } catch (err) {
+  } finally {
+    history.push('/mypage');
+  }
 };

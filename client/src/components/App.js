@@ -11,6 +11,7 @@ import Logout from './auth/Logout';
 import Signup from './auth/Signup';
 import BlogCreate from './blogs/BlogCreate';
 import BlogDetail from './blogs/BlogDetail';
+import BlogDelete from './blogs/BlogDelete';
 
 import history from '../history';
 
@@ -20,13 +21,14 @@ const App = () => {
       <Header />
       <Switch>
         <Route path="/" exact component={BlogList} />
-        <Route path="/tags" component={TagList} />
-        <Route path="/mypage" component={MyPage} />
-        <Route path="/login" component={Login} />
-        <Route path="/logout" component={Logout} />
-        <Route path="/signup" component={Signup} />
-        <Route path="/blog/new" component={BlogCreate} />
-        <Route path="/blog/:id" component={BlogDetail} />
+        <Route path="/tags" exact component={TagList} />
+        <Route path="/mypage" exact component={MyPage} />
+        <Route path="/login" exact component={Login} />
+        <Route path="/logout" exact component={Logout} />
+        <Route path="/signup" exact component={Signup} />
+        <Route path="/blog/new" exact component={BlogCreate} />
+        <Route path="/blog/:id" exact component={BlogDetail} />
+        <Route path="/blog/delete/:id" exact component={BlogDelete} />
       </Switch>
     </Router>
   );

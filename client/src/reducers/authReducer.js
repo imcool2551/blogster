@@ -1,8 +1,9 @@
 import { SIGN_IN, SIGN_OUT, SIGN_UP, GET_CURRENT_USER } from '../actions/types';
 
 const INITIAL_STATE = {
-  username: null,
   isSignedIn: null,
+  username: null,
+  user_id: null,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -12,7 +13,12 @@ export default (state = INITIAL_STATE, action) => {
     case SIGN_OUT:
       return { ...state, isSignedIn: false, username: null };
     case GET_CURRENT_USER:
-      return { ...state, isSignedIn: true, username: action.payload };
+      return {
+        ...state,
+        isSignedIn: true,
+        username: action.payload.username,
+        user_id: action.payload.user_id,
+      };
     case SIGN_UP:
       return state;
     default:

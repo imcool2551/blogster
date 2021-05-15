@@ -194,7 +194,7 @@ router.get('/api/users/currentuser', async (req, res) => {
     if (reply) {
       throw new NotFoundError('Blacklisted token');
     }
-    return res.send(decoded.username);
+    return res.send({ user_id: decoded.id, username: decoded.username });
   } catch (err) {
     throw err;
   }

@@ -5,21 +5,21 @@ import parse from 'html-react-parser';
 
 import { fetchBlog } from '../../actions/blog';
 
-const BlogDetail = (props) => {
+const BlogDetail = ({ blog, fetchBlog, match }) => {
   useEffect(() => {
-    props.fetchBlog(props.match.params.id);
-  }, []);
+    fetchBlog(match.params.id);
+  }, [fetchBlog, match.params.id]);
 
-  const { blog } = props;
-  if (!props.blog) {
-    return <div>Loading...</div>;
+  // 존재하지 않는 블로그
+  if (!blog || !blog.tags) {
+    return <></>;
   }
 
   const renderTags = (tags) => {
     return (
       <ul>
         {tags.map((tag) => {
-          return <li>{tag.tag_name}</li>;
+          return <li key={tag.tag_name}>{tag.tag_name}</li>;
         })}
       </ul>
     );
@@ -31,7 +31,7 @@ const BlogDetail = (props) => {
     return (
       <>
         {images.map((image) => {
-          return <img src={baseUrl + image.path} />;
+          return <img key={image.path} src={baseUrl + image.path} alt="" />;
         })}
       </>
     );
@@ -44,9 +44,10 @@ const BlogDetail = (props) => {
         <h1>{blog.title}</h1>
       </div>
       <div className="blog-detail-meta">
-        <h4>{`by ${blog.user.username} on ${new Date(
-          blog.createdAt
-        ).toDateString()}`}</h4>
+        <h4>
+          {`by ${blog.user.username} 
+          on ${new Date(blog.createdAt).toDateString()}`}
+        </h4>
       </div>
       <div className="blog-detail-content">
         <div className="blog-detail-content-images">

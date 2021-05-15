@@ -8,6 +8,7 @@ const { Op } = require('sequelize');
 const client = require('../config/redisClient');
 
 const BadRequestError = require('../errors/bad-request-error');
+const ForbiddenError = require('../errors/forbidden-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
 const NotFoundError = require('../errors/not-found-error');
 
@@ -21,6 +22,8 @@ client.get = util.promisify(client.get);
 
 /*
   POST /api/blogs
+
+  Headers: [x-access-token] || [Authorization]
 
   {
     title
@@ -86,9 +89,6 @@ router.post(
       await post.setUser(user, { transaction: t });
       await post.setImages(images, { transaction: t });
       await t.commit();
-      // const createdPost = await Post.findByPk(post.id, {
-      //   include: ['tags', 'images', 'user'],
-      // });
       return res.redirect(303, `/api/blogs/${post.id}`);
     } catch (err) {
       console.log(err);
@@ -104,26 +104,76 @@ router.post(
 */
 
 router.get('/api/blogs/:id', async (req, res) => {
-  const post = await Post.findByPk(req.params.id, {
-    include: [
-      {
-        model: Tag,
-        attributes: ['tag_name'],
-        as: 'tags',
+  try {
+    const post = await Post.findByPk(req.params.id, {
+      include: [
+        {
+          model: Tag,
+          attributes: ['tag_name'],
+          as: 'tags',
+        },
+        {
+          model: Image,
+          attributes: ['path'],
+          as: 'images',
+        },
+        {
+          model: User,
+          attributes: ['username'],
+          as: 'user',
+        },
+      ],
+    });
+    if (!post) {
+      throw new NotFoundError('Post does not exist');
+    }
+
+    res.send(post);
+  } catch (err) {
+    throw err;
+  }
+});
+
+/*
+  GET /api/user/blogs
+
+  Headers: [x-access-token] || [Authorization]
+*/
+
+router.get('/api/user/blogs', requireAuth, async (req, res) => {
+  try {
+    const posts = await Post.findAll({
+      where: {
+        user_id: req.user.id,
       },
-      {
-        model: Image,
-        attributes: ['path'],
-        as: 'images',
-      },
-      {
-        model: User,
-        attributes: ['username'],
-        as: 'user',
-      },
-    ],
-  });
-  res.send(post);
+    });
+
+    res.send(posts);
+  } catch (err) {
+    throw err;
+  }
+});
+
+/*
+  DELETE /api/blogs/:id
+
+  Headers: [x-access-token] || [Authorization]
+*/
+
+router.delete('/api/blogs/:id', requireAuth, async (req, res) => {
+  try {
+    const post = await Post.findByPk(req.params.id);
+    if (!post) {
+      throw new NotFoundError('Post does not exist');
+    }
+    if (post.user_id !== req.user.id) {
+      throw new ForbiddenError('Forbidden');
+    }
+    await post.destroy();
+    res.send({});
+  } catch (err) {
+    throw err;
+  }
 });
 
 module.exports = router;

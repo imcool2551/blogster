@@ -1,3 +1,12 @@
+.my-page {
+  margin-top: 30px;
+  padding: 20px;
+}
+
+.my-page-header {
+  margin-bottom: 40px;
+}
+
 .my-page-new {
   display: flex;
   justify-content: center;
@@ -12,6 +21,12 @@
   bottom: 10px;
   right: 10px;
   transition: 0.2s;
+}
+
+.my-page-main {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .my-page-new:hover {
