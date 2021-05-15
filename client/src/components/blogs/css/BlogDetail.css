@@ -7,12 +7,13 @@
   display: flex;
 }
 
-.blog-detail-tags ul li {
-  list-style-type: none;
+.blog-detail-tags ul a {
+  display: inline block;
+  margin: 0 4px 12px 0px;
+  padding: 8px;
   background: #a1a1a1;
+  border-radius: 10%;
   color: #fff;
-  padding: 5px;
-  margin-right: 10px;
 }
 
 .blog-detail-title {

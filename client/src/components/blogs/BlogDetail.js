@@ -1,5 +1,6 @@
 import './css/BlogDetail.css';
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import parse from 'html-react-parser';
 
@@ -15,15 +16,13 @@ const BlogDetail = ({ blog, fetchBlog, match }) => {
     return <></>;
   }
 
-  const renderTags = (tags) => {
-    return (
-      <ul>
-        {tags.map((tag) => {
-          return <li key={tag.tag_name}>{tag.tag_name}</li>;
-        })}
-      </ul>
-    );
-  };
+  const renderTags = (tags) => (
+    <ul>
+      {tags.map(({ tag_name }) => (
+        <Link to={`/tags#${tag_name}`}>{tag_name}</Link>
+      ))}
+    </ul>
+  );
 
   const renderImages = (images) => {
     const baseUrl =

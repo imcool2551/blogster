@@ -5,7 +5,7 @@ import { Redirect, Link } from 'react-router-dom';
 
 import { fetchMyBlogs } from '../../actions/blog';
 
-const MyPage = ({ isSignedIn, user_id, blogs, fetchMyBlogs }) => {
+const MyPage = ({ isSignedIn, user_id, username, blogs, fetchMyBlogs }) => {
   if (!isSignedIn) {
     <Redirect to="/" />;
   }
@@ -54,7 +54,7 @@ const MyPage = ({ isSignedIn, user_id, blogs, fetchMyBlogs }) => {
 
   return (
     <div className="my-page">
-      <h1 className="my-page-header">My Posts</h1>
+      <h1 className="my-page-header">{username} 's Posts</h1>
       <div className="my-page-main ui cards">{renderBlogs(blogs)}</div>
       <Link className="my-page-new" to="/blog/new">
         +
@@ -67,6 +67,7 @@ const mapStateToProps = (state) => {
   return {
     isSignedIn: state.auth.isSignedIn,
     user_id: state.auth.user_id,
+    username: state.auth.username,
     blogs: state.blogs,
   };
 };

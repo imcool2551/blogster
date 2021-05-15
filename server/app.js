@@ -20,11 +20,13 @@ const CustomError = require('./errors/custom-error');
 const authRouter = require('./routes/authRouter');
 const uploadRouter = require('./routes/uploadRouter');
 const blogRouter = require('./routes/blogRouter');
+const tagRouter = require('./routes/tagRouter');
 /*************************/
 
 app.use(authRouter);
 app.use(uploadRouter);
 app.use(blogRouter);
+app.use(tagRouter);
 
 app.get('/api', (req, res) => {
   res.send('Hello World!');

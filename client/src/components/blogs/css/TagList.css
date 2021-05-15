@@ -1,0 +1,37 @@
+.tag-list {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 20px;
+}
+
+.tag-list a {
+  display: inline block;
+  margin: 0 4px 12px 0px;
+  padding: 8px;
+  background: #a1a1a1;
+  border-radius: 10%;
+  color: #fff;
+}
+
+.tags {
+  margin-top: 60px;
+}
+
+.tag {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.tag-name {
+  font-size: 1.5rem;
+}
+
+.tag-link {
+  margin: 16px;
+  color: #a1a1a1;
+}
+
