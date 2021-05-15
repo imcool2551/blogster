@@ -4,3 +4,4 @@ export const GET_CURRENT_USER = 'GET_CURRENT_USER';
 export const SIGN_UP = 'SIGN_UP';
 
 export const CREATE_BLOG = 'CREATE_BLOG';
+export const FETCH_BLOG = 'FETCH_BLOG';

@@ -1,0 +1,30 @@
+.blog-detail {
+  margin-top: 30px;
+  padding: 20px;
+}
+
+.blog-detail-tags ul {
+  display: flex;
+}
+
+.blog-detail-tags ul li {
+  list-style-type: none;
+  background: #a1a1a1;
+  color: #fff;
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.blog-detail-title {
+  margin-top: 20px;
+}
+
+.blog-detail-content {
+  margin-top: 20px;
+}
+
+.blog-detail-content img {
+  width: 300px;
+  height: 300px;
+  margin: 10px;
+}

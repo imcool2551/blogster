@@ -10,6 +10,7 @@ import Login from './auth/Login';
 import Logout from './auth/Logout';
 import Signup from './auth/Signup';
 import BlogCreate from './blogs/BlogCreate';
+import BlogDetail from './blogs/BlogDetail';
 
 import history from '../history';
 
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/logout" component={Logout} />
         <Route path="/signup" component={Signup} />
         <Route path="/blog/new" component={BlogCreate} />
+        <Route path="/blog/:id" component={BlogDetail} />
       </Switch>
     </Router>
   );

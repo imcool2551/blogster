@@ -86,10 +86,10 @@ router.post(
       await post.setUser(user, { transaction: t });
       await post.setImages(images, { transaction: t });
       await t.commit();
-      const createdPost = await Post.findByPk(post.id, {
-        include: ['tags', 'images', 'user'],
-      });
-      return res.status(201).send(createdPost);
+      // const createdPost = await Post.findByPk(post.id, {
+      //   include: ['tags', 'images', 'user'],
+      // });
+      return res.redirect(303, `/api/blogs/${post.id}`);
     } catch (err) {
       console.log(err);
       await t.rollback();
@@ -97,5 +97,33 @@ router.post(
     }
   }
 );
+
+/* 
+  GET /api/blogs/:id
+
+*/
+
+router.get('/api/blogs/:id', async (req, res) => {
+  const post = await Post.findByPk(req.params.id, {
+    include: [
+      {
+        model: Tag,
+        attributes: ['tag_name'],
+        as: 'tags',
+      },
+      {
+        model: Image,
+        attributes: ['path'],
+        as: 'images',
+      },
+      {
+        model: User,
+        attributes: ['username'],
+        as: 'user',
+      },
+    ],
+  });
+  res.send(post);
+});
 
 module.exports = router;

@@ -1,13 +1,12 @@
-import { CREATE_BLOG } from '../actions/types';
+import _ from 'lodash';
+import { CREATE_BLOG, FETCH_BLOG } from '../actions/types';
 
-const INITIAL_STATE = {
-  blogs: [],
-};
-
-export default (state = INITIAL_STATE, action) => {
+export default (state = {}, action) => {
   switch (action.type) {
     case CREATE_BLOG:
-      return state;
+      return { ...state, [action.paylod.id]: action.payload };
+    case FETCH_BLOG:
+      return { ...state, [action.payload.id]: action.payload };
     default:
       return state;
   }

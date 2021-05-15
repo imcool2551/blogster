@@ -2,6 +2,8 @@ import api from '../apis/api';
 import axios from 'axios';
 import history from '../history';
 
+import { CREATE_BLOG, FETCH_BLOG } from './types';
+
 export const createBlog = (formValues) => async (dispatch) => {
   let { files } = formValues;
   files = files ? Array.prototype.slice.call(files) : [];
@@ -61,12 +63,16 @@ export const createBlog = (formValues) => async (dispatch) => {
     })
     .then(({ data }) => {
       console.log(4, 'api서버로부터 201 응답', data);
+      // 스토어 변경후 리디렉션
+      dispatch({ type: CREATE_BLOG, payload: data });
+      history.push('/mypage');
     })
     .catch((err) => {
       throw err;
     });
+};
 
-  // 4. 스토어 상태 변경
-
-  // 5. 리디렉션
+export const fetchBlog = (id) => async (dispatch) => {
+  const { data } = await api.get(`/api/blogs/${id}`);
+  dispatch({ type: FETCH_BLOG, payload: data });
 };
