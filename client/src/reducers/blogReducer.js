@@ -4,6 +4,7 @@ import {
   FETCH_BLOG,
   FETCH_MY_BLOGS,
   DELETE_BLOG,
+  FETCH_BLOGS,
 } from '../actions/types';
 
 export default (state = {}, action) => {
@@ -16,6 +17,11 @@ export default (state = {}, action) => {
       return { ..._.mapKeys(action.payload, 'id') };
     case DELETE_BLOG:
       return _.omit(state, action.payload);
+    case FETCH_BLOGS:
+      return {
+        ..._.mapKeys(action.payload.posts, 'id'),
+        count: action.payload.count,
+      };
     default:
       return state;
   }

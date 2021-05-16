@@ -1,34 +1,39 @@
 import './css/MyPage.css';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Redirect, Link } from 'react-router-dom';
 
 import { fetchMyBlogs } from '../../actions/blog';
 
-const MyPage = ({ isSignedIn, user_id, username, blogs, fetchMyBlogs }) => {
+const MyPage = ({ isSignedIn, blogs, fetchMyBlogs }) => {
+  const [loading, setLoading] = useState(true);
+
   if (!isSignedIn) {
     <Redirect to="/" />;
   }
 
   useEffect(() => {
-    fetchMyBlogs();
+    const init = async () => {
+      await fetchMyBlogs();
+      setLoading(false);
+    };
+    init();
   }, [fetchMyBlogs]);
 
-  if (!blogs) {
-    return <div>You don't have any posts</div>;
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
-  const renderBlogs = (blogs) => {
-    return Object.values(blogs)
-      .filter((blog) => blog.user_id === user_id)
-      .reverse()
+  const renderBlogs = (blogs) =>
+    Object.values(blogs)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .map((blog) => {
         return (
-          <div className="card" key={blog.id}>
+          <div key={blog.id} className="card">
             <div className="content">
               <div className="header">{blog.title}</div>
               <div className="description">
-                {new Date(blog.createdAt).toDateString()}
+                {new Date(blog.createdAt).toLocaleDateString()}
               </div>
               <div className="extra content">
                 <div className="ui two buttons">
@@ -50,11 +55,10 @@ const MyPage = ({ isSignedIn, user_id, username, blogs, fetchMyBlogs }) => {
           </div>
         );
       });
-  };
 
   return (
     <div className="my-page">
-      <h1 className="my-page-header">{username} 's Posts</h1>
+      <h1 className="my-page-header">내가 작성한 글</h1>
       <div className="my-page-main ui cards">{renderBlogs(blogs)}</div>
       <Link className="my-page-new" to="/blog/new">
         +

@@ -1,16 +1,16 @@
 .tag-list {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
   margin: 20px;
 }
 
-.tag-list a {
-  display: inline block;
-  margin: 0 4px 12px 0px;
+.tag-list-item {
+  display: inline-block;
+  margin: 3px 5px 0 0;
   padding: 8px;
   background: #a1a1a1;
   border-radius: 10%;
+}
+
+.tag-list-btn {  
   color: #fff;
 }
 

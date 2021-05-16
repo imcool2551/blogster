@@ -3,16 +3,15 @@
   padding: 20px;
 }
 
-.blog-detail-tags ul {
-  display: flex;
-}
-
-.blog-detail-tags ul a {
-  display: inline block;
-  margin: 0 4px 12px 0px;
+.blog-detail-tag-list-item {
+  display: inline-block;
+  margin: 3px 5px 0 0;
   padding: 8px;
   background: #a1a1a1;
   border-radius: 10%;
+}
+
+.blog-detail-tag-btn {
   color: #fff;
 }
 

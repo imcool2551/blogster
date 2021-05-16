@@ -1,5 +1,5 @@
 import './css/BlogDetail.css';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import parse from 'html-react-parser';
@@ -7,19 +7,29 @@ import parse from 'html-react-parser';
 import { fetchBlog } from '../../actions/blog';
 
 const BlogDetail = ({ blog, fetchBlog, match }) => {
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    fetchBlog(match.params.id);
+    const init = async () => {
+      await fetchBlog(match.params.id);
+      setLoading(false);
+    };
+    init();
   }, [fetchBlog, match.params.id]);
 
   // 존재하지 않는 블로그
-  if (!blog || !blog.tags) {
-    return <></>;
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   const renderTags = (tags) => (
-    <ul>
+    <ul className="blog-detail-tag-list">
       {tags.map(({ tag_name }) => (
-        <Link to={`/tags#${tag_name}`}>{tag_name}</Link>
+        <li className="blog-detail-tag-list-item" key={tag_name}>
+          <Link className="blog-detail-tag-btn" to={`/tags#${tag_name}`}>
+            {tag_name}
+          </Link>
+        </li>
       ))}
     </ul>
   );
@@ -45,7 +55,7 @@ const BlogDetail = ({ blog, fetchBlog, match }) => {
       <div className="blog-detail-meta">
         <h4>
           {`by ${blog.user.username} 
-          on ${new Date(blog.createdAt).toDateString()}`}
+          on ${new Date(blog.createdAt).toLocaleDateString()}`}
         </h4>
       </div>
       <div className="blog-detail-content">

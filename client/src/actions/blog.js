@@ -2,7 +2,13 @@ import api from '../apis/api';
 import axios from 'axios';
 import history from '../history';
 
-import { CREATE_BLOG, FETCH_BLOG, FETCH_MY_BLOGS, DELETE_BLOG } from './types';
+import {
+  CREATE_BLOG,
+  FETCH_BLOG,
+  FETCH_MY_BLOGS,
+  DELETE_BLOG,
+  FETCH_BLOGS,
+} from './types';
 
 export const createBlog = (formValues) => async (dispatch) => {
   let { files } = formValues;
@@ -89,5 +95,19 @@ export const deleteBlog = (id) => async (dispatch) => {
   } catch (err) {
   } finally {
     history.push('/mypage');
+  }
+};
+
+export const fetchBlogs = (page, limit) => async (dispatch) => {
+  try {
+    const { data } = await api.get('/api/blogs', {
+      params: {
+        page,
+        limit,
+      },
+    });
+    dispatch({ type: FETCH_BLOGS, payload: data });
+  } catch (err) {
+    throw err;
   }
 };

@@ -14,9 +14,11 @@ const TagList = ({ tags, fetchTags }) => {
     <>
       {tags.map((tag) => {
         return (
-          <a key={tag.tag_name} href={`#${tag.tag_name}`}>
-            {tag.tag_name}
-          </a>
+          <li className="tag-list-item" key={tag.tag_name}>
+            <a className="tag-list-btn" href={`#${tag.tag_name}`}>
+              {tag.tag_name}
+            </a>
+          </li>
         );
       })}
     </>
@@ -26,7 +28,7 @@ const TagList = ({ tags, fetchTags }) => {
     <>
       {posts.map((post) => {
         return (
-          <Link className="tag-link" to={`/blog/${post.id}`}>
+          <Link key={post.id} className="tag-link" to={`/blog/${post.id}`}>
             {post.title}
           </Link>
         );

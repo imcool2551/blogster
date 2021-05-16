@@ -72,7 +72,8 @@ router.post(
       // Tag 인스턴스 배열 생성
       async function getTagArray() {
         const tagArray = [];
-        for (const tag of tags) {
+        for (let tag of tags) {
+          tag = tag.substring(1); // # 제거
           const [tagInstance, created] = await Tag.findOrCreate({
             where: {
               tag_name: tag,
@@ -98,9 +99,48 @@ router.post(
   }
 );
 
+/*
+  GET /api/blogs
+
+  query-string: page, limit
+*/
+
+router.get('/api/blogs', async (req, res) => {
+  try {
+    if (!req.query.page || !req.query.limit) {
+      throw new BadRequestError('Missing required query-strings');
+    }
+    let { page, limit } = req.query;
+    limit = parseInt(limit);
+    page = parseInt(page);
+    offset = (page - 1) * limit;
+
+    const count = await Post.count();
+    const posts = await Post.findAll({
+      offset,
+      limit,
+      include: [
+        {
+          model: Tag,
+          attributes: ['tag_name'],
+          as: 'tags',
+        },
+        {
+          model: User,
+          attributes: ['username'],
+          as: 'user',
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+    res.send({ count, posts });
+  } catch (err) {
+    throw err;
+  }
+});
+
 /* 
   GET /api/blogs/:id
-
 */
 
 router.get('/api/blogs/:id', async (req, res) => {
@@ -146,6 +186,7 @@ router.get('/api/user/blogs', requireAuth, async (req, res) => {
       where: {
         user_id: req.user.id,
       },
+      order: [['createdAt', 'DESC']],
     });
 
     res.send(posts);

@@ -1,0 +1,19 @@
+.blog-list {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.blog-list-nav li {
+  display: inline-block;
+  margin-right: 3px;
+}
+
+.blog-list-btn {
+  border: 1px solid black;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+}
