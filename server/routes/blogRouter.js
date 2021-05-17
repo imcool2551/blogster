@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const { body } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
-const jwt = require('jsonwebtoken');
 const util = require('util');
 const { Op } = require('sequelize');
 
@@ -9,7 +8,6 @@ const client = require('../config/redisClient');
 
 const BadRequestError = require('../errors/bad-request-error');
 const ForbiddenError = require('../errors/forbidden-error');
-const UnauthorizedError = require('../errors/unauthorized-error');
 const NotFoundError = require('../errors/not-found-error');
 
 const validateRequest = require('../middlewares/validateRequest');
@@ -17,8 +15,10 @@ const requireAuth = require('../middlewares/requireAuth');
 
 const { Post, Image, Tag, User, sequelize } = require('../db/models');
 
-jwt.verify = util.promisify(jwt.verify);
 client.get = util.promisify(client.get);
+client.set = util.promisify(client.set);
+client.hget = util.promisify(client.hget);
+client.hset = util.promisify(client.hset);
 
 /*
   POST /api/blogs
@@ -90,6 +90,11 @@ router.post(
       await post.setUser(user, { transaction: t });
       await post.setImages(images, { transaction: t });
       await t.commit();
+      // 캐시 무효화 (blogs, tags, mypage)
+      client.del('blogs');
+      client.del('tags');
+      client.del(`mypage/${req.user.id}`);
+
       return res.redirect(303, `/api/blogs/${post.id}`);
     } catch (err) {
       console.log(err);
@@ -100,7 +105,7 @@ router.post(
 );
 
 /*
-  GET /api/blogs
+  GET /api/blogs 
 
   query-string: page, limit
 */
@@ -110,6 +115,16 @@ router.get('/api/blogs', async (req, res) => {
     if (!req.query.page || !req.query.limit) {
       throw new BadRequestError('Missing required query-strings');
     }
+
+    // 캐시에 존재하면 캐시값 바로 리턴 (key1: 'blogs', key2: query-string)
+    const key = JSON.stringify(req.query);
+    const cacheValue = await client.hget('blogs', key);
+    if (cacheValue) {
+      console.log('Returning from cache');
+      return res.send(JSON.parse(cacheValue));
+    }
+
+    console.log('Returning from DB');
     let { page, limit } = req.query;
     limit = parseInt(limit);
     page = parseInt(page);
@@ -133,7 +148,11 @@ router.get('/api/blogs', async (req, res) => {
       ],
       order: [['createdAt', 'DESC']],
     });
-    res.send({ count, posts });
+
+    // 캐시에 값 채워넣기 (key1: 'blogs', key2: query-string)
+    const value = { count, posts };
+    client.hset('blogs', key, JSON.stringify(value));
+    res.send(value);
   } catch (err) {
     throw err;
   }
@@ -145,6 +164,15 @@ router.get('/api/blogs', async (req, res) => {
 
 router.get('/api/blogs/:id', async (req, res) => {
   try {
+    // 캐시에 존재하면 캐시값 바로 리턴 (key: `blog${req.params.id}`)
+    const key = `blog/${req.params.id}`;
+    const cacheValue = await client.get(key);
+    if (cacheValue) {
+      console.log('Returning from cache');
+      return res.send(JSON.parse(cacheValue));
+    }
+
+    console.log('Returning from DB');
     const post = await Post.findByPk(req.params.id, {
       include: [
         {
@@ -167,6 +195,8 @@ router.get('/api/blogs/:id', async (req, res) => {
     if (!post) {
       throw new NotFoundError('Post does not exist');
     }
+    // 캐시에 값 채워넣기 (key: `blog${req.params.id}`)
+    client.set(key, JSON.stringify(post));
 
     res.send(post);
   } catch (err) {
@@ -182,14 +212,57 @@ router.get('/api/blogs/:id', async (req, res) => {
 
 router.get('/api/user/blogs', requireAuth, async (req, res) => {
   try {
+    // 캐시에 존재하면 캐시값 바로 리턴 (key: `mypage${req.user.id}`)
+    const key = `mypage/${req.user.id}`;
+    const cacheValue = await client.get(key);
+    if (cacheValue) {
+      console.log('Returning from cache');
+      return res.send(JSON.parse(cacheValue));
+    }
+
     const posts = await Post.findAll({
       where: {
         user_id: req.user.id,
       },
       order: [['createdAt', 'DESC']],
     });
+    // 캐시에 값 채워넣기 (key: `mypage${req.user.id}`)
+    client.set(key, JSON.stringify(posts));
 
     res.send(posts);
+  } catch (err) {
+    throw err;
+  }
+});
+
+/*
+  GET /api/tags
+*/
+
+router.get('/api/tags', async (req, res) => {
+  try {
+    // 캐시에 존재하면 캐시값 바로 리턴 (key: 'tags')
+    const key = 'tags';
+    const cacheValue = await client.get(key);
+    if (cacheValue) {
+      console.log('Returning from cache');
+      return res.send(JSON.parse(cacheValue));
+    }
+
+    console.log('Returning from DB');
+    const tags = await Tag.findAll({
+      include: [
+        {
+          model: Post,
+          attributes: ['id', 'title'],
+          as: 'posts',
+        },
+      ],
+    });
+    // 캐시에 값 채워넣기 (key: 'tags')
+    client.set(key, JSON.stringify(tags));
+
+    res.send(tags);
   } catch (err) {
     throw err;
   }
@@ -211,29 +284,13 @@ router.delete('/api/blogs/:id', requireAuth, async (req, res) => {
       throw new ForbiddenError('Forbidden');
     }
     await post.destroy();
+    // 캐시 무효화 (blogs, blog, tags, mypage)
+    client.del('blogs');
+    client.del(`blog/${req.params.id}`);
+    client.del('tags');
+    client.del(`mypage/${req.user.id}`);
+
     res.send({});
-  } catch (err) {
-    throw err;
-  }
-});
-
-/*
-  GET /api/tags
-*/
-
-router.get('/api/tags', async (req, res) => {
-  try {
-    const tags = await Tag.findAll({
-      include: [
-        {
-          model: Post,
-          attributes: ['id', 'title'],
-          as: 'posts',
-        },
-      ],
-    });
-
-    res.send(tags);
   } catch (err) {
     throw err;
   }

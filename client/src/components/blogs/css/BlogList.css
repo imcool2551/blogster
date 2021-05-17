@@ -6,6 +6,14 @@
   align-items: center;
 }
 
+.card .header {
+  margin: 5px;
+}
+
+.meta {
+  margin: 5px 10px;
+}
+
 .blog-list-nav li {
   display: inline-block;
   margin-right: 3px;
