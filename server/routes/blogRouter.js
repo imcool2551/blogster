@@ -12,6 +12,7 @@ const NotFoundError = require('../errors/not-found-error');
 
 const validateRequest = require('../middlewares/validateRequest');
 const requireAuth = require('../middlewares/requireAuth');
+const apiLimiter = require('../middlewares/apiLimiter');
 
 const { Post, Image, Tag, User, sequelize } = require('../db/models');
 
@@ -35,6 +36,7 @@ client.hset = util.promisify(client.hset);
 
 router.post(
   '/api/blogs',
+  apiLimiter(0.5, 1, '30초마다 작성할 수 있습니다'),
   requireAuth,
   [
     body('title').trim().notEmpty().withMessage('Title must not be empty'),
@@ -71,6 +73,7 @@ router.post(
 
       // Tag 인스턴스 배열 생성
       async function getTagArray() {
+        tags = [...new Set(tags)]; // tags 배열 중복 제거
         const tagArray = [];
         for (let tag of tags) {
           tag = tag.substring(1); // # 제거
@@ -230,39 +233,6 @@ router.get('/api/user/blogs', requireAuth, async (req, res) => {
     client.set(key, JSON.stringify(posts));
 
     res.send(posts);
-  } catch (err) {
-    throw err;
-  }
-});
-
-/*
-  GET /api/tags
-*/
-
-router.get('/api/tags', async (req, res) => {
-  try {
-    // 캐시에 존재하면 캐시값 바로 리턴 (key: 'tags')
-    const key = 'tags';
-    const cacheValue = await client.get(key);
-    if (cacheValue) {
-      console.log('Returning from cache');
-      return res.send(JSON.parse(cacheValue));
-    }
-
-    console.log('Returning from DB');
-    const tags = await Tag.findAll({
-      include: [
-        {
-          model: Post,
-          attributes: ['id', 'title'],
-          as: 'posts',
-        },
-      ],
-    });
-    // 캐시에 값 채워넣기 (key: 'tags')
-    client.set(key, JSON.stringify(tags));
-
-    res.send(tags);
   } catch (err) {
     throw err;
   }

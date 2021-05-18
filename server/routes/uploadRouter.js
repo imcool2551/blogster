@@ -1,7 +1,9 @@
 const router = require('express').Router();
 const { v4: uuidv4 } = require('uuid');
 
+const apiLimiter = require('../middlewares/apiLimiter');
 const requireAuth = require('../middlewares/requireAuth');
+
 const s3 = require('../config/aws-s3');
 
 /*

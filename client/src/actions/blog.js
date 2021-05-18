@@ -53,8 +53,9 @@ export const createBlog = (formValues) => async (dispatch) => {
     // 2번 promise 배열 이행한 뒤
     .then(() => {
       console.log(2, 's3에 이미지 업로드');
+
       return new Promise((resolve, reject) => {
-        resolve(Promise.all(putObjects));
+        Promise.all(putObjects).then(resolve).catch(reject);
       });
     })
     // api 서버에 블로그 post 요청
@@ -74,7 +75,7 @@ export const createBlog = (formValues) => async (dispatch) => {
       history.push('/mypage');
     })
     .catch((err) => {
-      throw err;
+      alert(err.response.data);
     });
 };
 

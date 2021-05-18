@@ -76,15 +76,7 @@ const BlogCreateForm = (props) => {
   const { error, handleSubmit } = props;
 
   const onSubmit = async (formValues) => {
-    try {
-      await props.onSubmit(formValues);
-    } catch (err) {
-      if (err.response.status === 400) {
-        throw new SubmissionError({
-          _error: err.response.data.errors[0].message,
-        });
-      }
-    }
+    await props.onSubmit(formValues);
   };
 
   return (
