@@ -14,64 +14,64 @@ export const createBlog = (formValues) => async (dispatch) => {
   let { files } = formValues;
   files = files ? Array.prototype.slice.call(files) : [];
 
-  // 1번 promise 배열  (files 개수만큼 signed-url 요청)
+  // uploadConfig 배열 : files 개수만큼 signed-url 준비
   const getUploadConfigs = files.map((file) => {
     return new Promise((resolve, reject) => {
       api
         .get('/api/upload')
         .then(({ data }) => {
-          resolve({ ...data, file });
+          resolve({ ...data, file }); // { url, path, file }
         })
         .catch(reject);
     });
   });
 
-  // 2번 promise 배열 (s3 버킷에 파일 올리기)
+  // 2번 promise 배열 : s3 버킷에 파일 올리기
   let putObjects = [];
-  const putObject = (uploadConfig, file) =>
+  const putObject = (uploadConfig) =>
     new Promise((resolve, reject) => {
       axios
-        .put(uploadConfig.url, file, {
+        .put(uploadConfig.url, uploadConfig.file, {
           headers: {
-            'Content-Type': file.type,
+            'Content-Type': uploadConfig.file.type,
           },
         })
         .then(resolve)
         .catch(reject);
     });
 
-  // 1번 promise 배열 이행하면서 2번 promise배열 준비
-  const paths = [];
+  // uploadConfig 배열이 모두 준비되면
   Promise.all(getUploadConfigs)
     .then((uploadConfigs) => {
-      uploadConfigs.forEach((uploadConfig) => {
-        console.log(1, 'presigned url 생성');
-        paths.push(uploadConfig.key); // 블로그 post 요청시 필요
-        putObjects.push(putObject(uploadConfig, uploadConfig.file));
+      console.log(1, '파일개수만큼 presigned url 요청성공');
+      // paths만 분리해서
+      const paths = uploadConfigs.map((uploadConfig) => {
+        return uploadConfig.path;
       });
-    })
-    // 2번 promise 배열 이행한 뒤
-    .then(() => {
-      console.log(2, 's3에 이미지 업로드');
-
-      return new Promise((resolve, reject) => {
-        Promise.all(putObjects).then(resolve).catch(reject);
-      });
-    })
-    // api 서버에 블로그 post 요청
-    .then(() => {
-      console.log(3, 'api서버에 블로그 post요청');
+      // blog라우터에 post 요청
       return new Promise((resolve, reject) => {
         api
           .post('/api/blogs', { ...formValues, files: paths })
-          .then(resolve)
+          .then(({ data }) => resolve({ uploadConfigs, data }))
           .catch(reject);
       });
     })
-    .then(({ data }) => {
-      console.log(4, 'api서버로부터 200 응답 (303 See Other)', data);
-      // 스토어 변경후 리디렉션
+    // post 요청이 성공했다면
+    .then(({ uploadConfigs, data }) => {
+      console.log(2, 'POST /api/blogs 요청성공');
+
+      // s3버킷에 파일 올리는 Promise배열 생성
+      uploadConfigs.forEach((uploadConfig) => {
+        putObjects.push(putObject(uploadConfig));
+      });
+
+      // 스토어 변경한 뒤, 모든 파일이 올라갔다면
       dispatch({ type: CREATE_BLOG, payload: data });
+      return Promise.all(putObjects);
+    })
+    //  마이페이지로 리디렉션
+    .then(() => {
+      console.log(3, 'S3 버킷에 이미지 업로드 성공');
       history.push('/mypage');
     })
     .catch((err) => {
