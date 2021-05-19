@@ -35,13 +35,21 @@ client.hset = util.promisify(client.hset);
 
 router.post(
   '/api/blogs',
-  apiLimiter(0.5, 1, '30초마다 작성할 수 있습니다'),
   requireAuth,
   [
     body('title').trim().notEmpty().withMessage('Title must not be empty'),
+    body('tags')
+      .trim()
+      .notEmpty()
+      .custom((val) => /#[\d|A-Z|a-z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]+/gi.test(val))
+      .withMessage('Invalid tag format'),
+    body('files')
+      .isArray({ max: 10 })
+      .withMessage('Too many images (Maximum 10)'),
     body('content').trim().notEmpty().withMessage('Content must not be empty'),
   ],
   validateRequest,
+  apiLimiter(0.5, 1, '30초마다 작성할 수 있습니다'),
   async (req, res) => {
     req.body.content = sanitizeHtml(req.body.content);
     req.body.tags = req.body.tags.match(/#[\d|A-Z|a-z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]+/gi);

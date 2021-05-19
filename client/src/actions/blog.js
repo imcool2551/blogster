@@ -76,7 +76,8 @@ export const createBlog = (formValues) => async (dispatch) => {
     })
     // 에러처리
     .catch((err) => {
-      alert(err.response.data);
+      const message = err.response.data.errors[0].message;
+      alert(message);
     });
 };
 
