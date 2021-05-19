@@ -1,11 +1,15 @@
 require('express-async-errors');
 const express = require('express');
 const app = express();
+const helmet = require('helmet');
+const hpp = require('hpp');
 const { json } = require('body-parser');
 const cors = require('cors');
 
 // Middlewares
 app.use(json());
+app.use(helmet());
+app.use(hpp());
 app.use(
   cors({
     origin: 'http://localhost:3000',
