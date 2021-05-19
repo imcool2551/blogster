@@ -2,7 +2,6 @@ const router = require('express').Router();
 const { body } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
 const util = require('util');
-const { Op } = require('sequelize');
 
 const client = require('../config/redisClient');
 
@@ -253,12 +252,29 @@ router.delete('/api/blogs/:id', requireAuth, async (req, res) => {
     if (post.user_id !== req.user.id) {
       throw new ForbiddenError('Forbidden');
     }
-    await post.destroy();
     // 캐시 무효화 (blogs, blog, tags, mypage)
     client.del('blogs');
     client.del(`blog/${req.params.id}`);
     client.del('tags');
     client.del(`mypage/${req.user.id}`);
+
+    await post.destroy();
+
+    // 연관된 포스트가 없는 태그 삭제
+    const tags = await sequelize.query(
+      `
+      SELECT * 
+      FROM tags 
+      LEFT JOIN post_tags 
+        ON tags.id = post_tags.tag_id
+      WHERE post_id IS NULL`,
+      {
+        model: Tag,
+      }
+    );
+    tags.forEach((tag) => {
+      tag.destroy();
+    });
 
     res.send({});
   } catch (err) {

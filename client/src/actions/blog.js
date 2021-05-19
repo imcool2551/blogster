@@ -14,7 +14,7 @@ export const createBlog = (formValues) => async (dispatch) => {
   let { files } = formValues;
   files = files ? Array.prototype.slice.call(files) : [];
 
-  // uploadConfig 배열 : files 개수만큼 signed-url 준비
+  // 1번 Promise 배열 : files 개수만큼 signed-url 준비
   const getUploadConfigs = files.map((file) => {
     return new Promise((resolve, reject) => {
       api
@@ -26,7 +26,7 @@ export const createBlog = (formValues) => async (dispatch) => {
     });
   });
 
-  // 2번 promise 배열 : s3 버킷에 파일 올리기
+  // 2번 Promise 배열 : s3 버킷에 파일 올리기
   let putObjects = [];
   const putObject = (uploadConfig) =>
     new Promise((resolve, reject) => {
@@ -40,7 +40,7 @@ export const createBlog = (formValues) => async (dispatch) => {
         .catch(reject);
     });
 
-  // uploadConfig 배열이 모두 준비되면
+  // uploadConfig 배열이 모두 준비되면 (1번배열)
   Promise.all(getUploadConfigs)
     .then((uploadConfigs) => {
       console.log(1, '파일개수만큼 presigned url 요청성공');
@@ -60,7 +60,7 @@ export const createBlog = (formValues) => async (dispatch) => {
     .then(({ uploadConfigs, data }) => {
       console.log(2, 'POST /api/blogs 요청성공');
 
-      // s3버킷에 파일 올리는 Promise배열 생성
+      // s3버킷에 파일 올리는 Promise배열 생성 (2번배열)
       uploadConfigs.forEach((uploadConfig) => {
         putObjects.push(putObject(uploadConfig));
       });
@@ -69,11 +69,12 @@ export const createBlog = (formValues) => async (dispatch) => {
       dispatch({ type: CREATE_BLOG, payload: data });
       return Promise.all(putObjects);
     })
-    //  마이페이지로 리디렉션
+    // 마이페이지로 리디렉션
     .then(() => {
       console.log(3, 'S3 버킷에 이미지 업로드 성공');
       history.push('/mypage');
     })
+    // 에러처리
     .catch((err) => {
       alert(err.response.data);
     });

@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const util = require('util');
-const etag = require('etag');
 
 const client = require('../config/redisClient');
 
@@ -20,7 +19,6 @@ router.get('/api/tags', async (req, res) => {
     // 캐시에 존재하면 리턴 (key: 'tags')
     if (cacheValue) {
       console.log('Returning from cache');
-      res.set('Cache-control', 'no-cache');
       return res.send(JSON.parse(cacheValue));
     }
 
@@ -36,8 +34,6 @@ router.get('/api/tags', async (req, res) => {
     });
     // 캐시에 값 채워넣기 (key: 'tags')
     client.set(key, JSON.stringify(tags));
-
-    res.setHeader('ETag', etag(JSON.stringify(tags)));
     res.send(tags);
   } catch (err) {
     throw err;
