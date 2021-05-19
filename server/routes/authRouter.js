@@ -59,9 +59,10 @@ router.post(
     // Build user
     User.buildUser(username, email, password)
       .then((user) => {
-        // If user is created, send a verification email
-
-        const url = `http://${req.headers.host}${req.url}?verify_key=${user.verify_key}`;
+        // 쿼리스트링 '+' 를 스페이스 대신 '%2B' 로 바꾸기 위해 인코딩
+        const url = `http://${req.headers.host}${
+          req.url
+        }?verify_key=${encodeURIComponent(user.verify_key)}`;
         return sendVerificationEmail(user, url);
       })
       .then(() => {
@@ -88,7 +89,7 @@ router.get('/api/users/signup', async (req, res) => {
     return res.status(201).send('Email has been sent');
   }
 
-  let user = await User.findOne({
+  const user = await User.findOne({
     where: {
       verify_key,
     },
@@ -98,7 +99,7 @@ router.get('/api/users/signup', async (req, res) => {
     throw new NotFoundError('There is no user with provided verify_key');
   }
 
-  user = await user.verifyUser();
+  await user.verifyUser();
 
   res.send('회원가입이 완료되었습니다');
 });

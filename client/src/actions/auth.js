@@ -9,7 +9,8 @@ export const signIn = (formValues) => async (dispatch) => {
     dispatch({ type: SIGN_IN });
     history.push('/');
   } catch (err) {
-    throw err;
+    const message = err.response.data.errors[0].message;
+    alert(message);
   }
 };
 
@@ -27,7 +28,9 @@ export const getCurrentUser = () => async (dispatch) => {
 export const signOut = () => async (dispatch) => {
   try {
     await api.post('/api/users/signout');
-  } catch {
+  } catch (err) {
+    const message = err.response.data.errors[0].message;
+    alert(message);
   } finally {
     window.localStorage.removeItem('token');
     dispatch({ type: SIGN_OUT });
@@ -41,6 +44,7 @@ export const signUp = (formValues) => async (dispatch) => {
     alert('이메일로 인증메일이 발송되었습니다');
     history.push('/login');
   } catch (err) {
-    throw err;
+    const message = err.response.data.errors[0].message;
+    alert(message);
   }
 };

@@ -11,7 +11,7 @@ const NotFoundError = require('../errors/not-found-error');
 
 const validateRequest = require('../middlewares/validateRequest');
 const requireAuth = require('../middlewares/requireAuth');
-const apiLimiter = require('../middlewares/apiLimiter');
+const { blogPostLimiter } = require('../middlewares/apiLimiter');
 
 const { Post, Image, Tag, User, sequelize } = require('../db/models');
 
@@ -49,7 +49,7 @@ router.post(
     body('content').trim().notEmpty().withMessage('Content must not be empty'),
   ],
   validateRequest,
-  apiLimiter(0.5, 1, '30초마다 작성할 수 있습니다'),
+  blogPostLimiter,
   async (req, res) => {
     req.body.content = sanitizeHtml(req.body.content);
     req.body.tags = req.body.tags.match(/#[\d|A-Z|a-z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]+/gi);

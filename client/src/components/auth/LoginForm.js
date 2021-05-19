@@ -1,5 +1,5 @@
 import React from 'react';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
 
 // Client Side Validation
@@ -31,24 +31,7 @@ const LoginForm = (props) => {
   const { error, handleSubmit } = props;
 
   const onSubmit = async (formValues) => {
-    try {
-      await props.onSubmit(formValues);
-    } catch (err) {
-      if (err.response.status === 400) {
-        // 서버 유효성 검사 실패
-        err.response.data.errors.forEach((e) => {
-          throw new SubmissionError({
-            [e.param]: e.message,
-            _error: 'Login failed!',
-          });
-        });
-      } else {
-        // 인증 실패 (401, 403)
-        throw new SubmissionError({
-          _error: err.response.data.errors[0].message,
-        });
-      }
-    }
+    await props.onSubmit(formValues);
   };
 
   return (

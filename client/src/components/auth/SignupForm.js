@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 
 // Client Side Validation
 const required = (value) =>
@@ -37,16 +37,7 @@ const SignupForm = (props) => {
   const { error, handleSubmit } = props;
 
   const onSubmit = async (formValues) => {
-    try {
-      await props.onSubmit(_.omit(formValues, ['passwordMatch']));
-    } catch (err) {
-      if (err.response.status === 400) {
-        // <서버 유효성 검사 실패> OR <중복 닉네임/이메일>
-        throw new SubmissionError({
-          _error: err.response.data.errors[0].message,
-        });
-      }
-    }
+    await props.onSubmit(_.omit(formValues, ['passwordMatch']));
   };
 
   return (
