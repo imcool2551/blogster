@@ -6,6 +6,8 @@ const hpp = require('hpp');
 const { json } = require('body-parser');
 const cors = require('cors');
 
+app.set('trust proxy', 1); // trust first proxy
+
 // Middlewares
 app.use(json());
 app.use(helmet());
