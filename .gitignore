@@ -1,5 +1,5 @@
 **/node_modules
 devlog.txt
 docker-compose.yml
-deploy.sh
+ec2-user-data.sh
 .DS_Store

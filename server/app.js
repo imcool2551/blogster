@@ -14,7 +14,8 @@ app.use(helmet());
 app.use(hpp());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://www.wsangwook.com',
+    // origin: 'http://localhost:3000',
     credentials: true,
     allowedHeaders: ['Authorization', 'x-access-token', 'Content-Type'],
   })
